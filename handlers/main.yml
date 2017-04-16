@@ -29,14 +29,14 @@
 
 - name: enable postgresql
   systemd:
-    name: "postgresql-{{ postgres_version }}"
+    name: postgresql
     state: stopped
     daemon_reload: yes
     enabled: yes
 
 - name: start postgresql
   systemd:
-    name: "postgresql-{{ postgres_version }}"
+    name: postgresql
     state: started
     daemon_reload: yes
     enabled: yes
