@@ -1,4 +1,5 @@
 ---
+posgres_version: 9.6
   
 pgpool2_package_state: present
 pgpool2_user: postgres
