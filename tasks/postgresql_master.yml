@@ -17,7 +17,7 @@
 - name: remove rpm service file
   file:
     state: absent
-    dest: /usr/lib/systemd/system/posgresql-{{ postgres_version }}.service
+    dest: /usr/lib/systemd/system/postgresql-{{ postgres_version }}.service
 
 - name: initialize database
   command: "/usr/pgsql-{{ postgres_version }}/bin/postgresql{{ pg_version }}-setup initdb --pgdata={{ postgres_datadir }}"
