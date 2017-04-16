@@ -1,6 +1,7 @@
-pgsql_repo_package: "https://download.postgresql.org/pub/repos/yum/{{ postgres_version }}/redhat/rhel-7-x86_64/pgdg-centos{{ pg_version }}-{{ postgres_version }}-3.noarch.rpm"
+pgsql_repo_package: "https://download.postgresql.org/pub/repos/yum/{{ postgres_version }}/redhat/rhel-7-x86_64/pgdg-{{ ansible_distribution |lower}}{{ pg_version }}-{{ postgres_version }}-3.noarch.rpm"
 
 pgpool2_packages:
   - "postgresql{{ pg_version }}-server"
   - "postgresql{{ pg_version }}-contrib"
   - "pgpool-II-{{ pg_version }}"
+  - "python-psycopg2"

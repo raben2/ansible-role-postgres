@@ -2,6 +2,8 @@
 postgres_version: 9.6
 pg_version: 96 # required for download and linking
 postgres_initdb: True
+postgres_replication_user: replicator
+postgres_replication_user_pass: passw0rd
   
 pgpool2_package_state: present
 pgpool2_user: postgres
