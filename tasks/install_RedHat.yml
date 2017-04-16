@@ -1,0 +1,41 @@
+---
+- name: install epel
+  yum:
+    name: epel-release
+    state: latest
+
+- name: install PG repo
+  yum:
+    name: "{{ pgsql_repo_package }}"
+    state: installed
+
+- name: install required pgpool2 packages
+  yum:
+    name: "{{ item }}"
+    state: "{{ pgpool2_package_state }}"
+  with_items: "{{ pgpool2_packages }}"
+
+- name: short command wrapper
+  template:
+    src: pcpctl.j2
+    dest: /usr/local/bin/pcpctl
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Create "/etc/pgpool2/" directory with necessary privileges
+  file:
+    dest: "/etc/pgpool2/"
+    owner: "{{ pgpool2_user }}"
+    group: "{{ pgpool2_group }}"
+    mode: 0755
+    state: directory
+
+
+- name: pgpool2 systemd unit
+  template:
+    src: service.j2
+    dest: "/usr/lib/systemd/system/pgpool2.service"
+    mode: 0655
+  notify:
+    - restart systemd

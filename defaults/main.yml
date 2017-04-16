@@ -1,0 +1,185 @@
+---
+  
+pgpool2_package_state: present
+pgpool2_user: postgres
+pgpool2_group: postgres
+pgpool2_confdir: /etc/pgpool2
+pgpool2_pcp_user_name: pcpAdmin
+pgpool2_pcp_user_password: passw0rd
+
+pgpool2_auto_reattach: off
+
+pgpool2_hba_default:
+  - comment: unix socket connections
+    type: local
+    database: all
+    user: all
+    address: ""
+    method: trust
+  - comment: local IPv4 connections
+    type: host
+    database: all
+    user: all
+    address: 127.0.0.1/32
+    method: md5
+
+pgpool2_hba_custom: []
+
+# Enabling md5 auth on pgpool2
+#
+# pgpool2_pool_users:
+#   - name: test
+#     pass: 1qa2ws3ed
+#
+
+pgpool2_pool_users: []
+
+# pgpool2_backends:
+#   - name: name_of_host
+#     host: hostname or 10.10.10.10
+#     port: 5432
+#     weight: 1
+#     data_directory: /var/lib/postgresql/9.4/main
+#     flag: ALLOW_TO_FAILOVER
+
+pgpool2_backends: []
+
+# pgpool2_heartbeat_nodes:
+#   - hostname: hostname2
+#     address: 10.10.10.10
+#     port: 9694
+#     device: eth0
+
+pgpool2_heartbeat_nodes: []
+
+# pgpool2_query_nodes:
+#  - hostname: hostname1
+#    address: 10.10.10.10
+#    port: 5432
+#    wd_port: 9000
+
+pgpool2_query_nodes: []
+
+pgpool2_allow_sql_comments: off
+pgpool2_app_name_redirect_preference_list: ''
+pgpool2_arping_cmd: sudo /usr/sbin/arping -c 2 -q $_IP_$
+pgpool2_arping_path: /usr/bin
+pgpool2_authentication_timeout: 60
+pgpool2_black_function_list: nextval,setval
+pgpool2_black_memqcache_table_list: ''
+pgpool2_check_temp_table: on
+pgpool2_check_unlogged_table: on
+pgpool2_child_life_time: 300
+pgpool2_child_max_connections: 0
+pgpool2_clear_memqcache_on_escalation: on
+pgpool2_client_idle_limit: 0
+pgpool2_client_idle_limit_in_recovery: 0
+pgpool2_client_min_messages: notice
+pgpool2_connect_timeout: 10000
+pgpool2_connection_cache: on
+pgpool2_connection_life_time: 0
+pgpool2_database_redirect_preference_list: ''
+pgpool2_debug_level: 0
+pgpool2_delay_threshold: 0
+pgpool2_delegate_IP: ''
+pgpool2_enable_pool_hba: off
+pgpool2_fail_over_on_backend_error: on
+pgpool2_failback_command: ''
+pgpool2_failover_command: ''
+pgpool2_failover_if_affected_tuples_mismatch: off
+pgpool2_follow_master_command: ''
+pgpool2_health_check_database: ''
+pgpool2_health_check_max_retries: 0
+pgpool2_health_check_password: ''
+pgpool2_health_check_period: 0
+pgpool2_health_check_retry_delay: 1
+pgpool2_health_check_timeout: 20
+pgpool2_health_check_user: nobody
+pgpool2_hostname: ''
+pgpool2_if_cmd_path: '/sbin'
+pgpool2_if_down_cmd: sudo /sbin/ifconfig eth0:0 down
+pgpool2_if_up_cmd: sudo /sbin/ifconfig eth0:0 inet $_IP_$ netmask 255.255.255.0
+pgpool2_ignore_leading_white_space: on
+pgpool2_insert_lock: on
+pgpool2_listen_addresses: localhost
+pgpool2_listen_backlog_multiplier: 2
+pgpool2_load_balance_mode: off
+pgpool2_lobj_lock_table: ''
+pgpool2_log_connections: off
+pgpool2_log_destination: syslog
+pgpool2_log_error_verbosity: default
+pgpool2_log_hostname: off
+pgpool2_log_line_prefix: '%t: pid %p: '
+pgpool2_log_min_messages: warning
+pgpool2_log_per_node_statement: off
+pgpool2_log_standby_delay: none
+pgpool2_log_statement: off
+pgpool2_logdir: /var/log/postgresql
+pgpool2_master_slave_mode: off
+pgpool2_master_slave_sub_mode: slony
+pgpool2_max_pool: 4
+pgpool2_memory_cache_enabled: off
+pgpool2_memqcache_auto_cache_invalidation: on
+pgpool2_memqcache_cache_block_size: 1048576
+pgpool2_memqcache_expire: 0
+pgpool2_memqcache_max_num_cache: 1000000
+pgpool2_memqcache_maxcache: 409600
+pgpool2_memqcache_memcached_host: localhost
+pgpool2_memqcache_memcached_port: 11211
+pgpool2_memqcache_method: shmem
+pgpool2_memqcache_oiddir: /var/log/pgpool/oiddir
+pgpool2_memqcache_total_size: 67108864
+pgpool2_num_init_children: 32
+pgpool2_pcp_listen_addresses: '*'
+pgpool2_pcp_port: 9898
+pgpool2_pcp_socket_dir: /var/run/postgresql
+pgpool2_pid_file_name: /var/run/postgresql/pgpool.pid
+pgpool2_ping_path: /bin
+pgpool2_pool_passwd: 'passwd_file'
+pgpool2_port: 5433
+pgpool2_recovery_1st_stage_command: ''
+pgpool2_recovery_2nd_stage_command: ''
+pgpool2_recovery_password: ''
+pgpool2_recovery_timeout: 90
+pgpool2_recovery_user: nobody
+pgpool2_relcache_expire: 0
+pgpool2_relcache_size: 256
+pgpool2_replicate_select: off
+pgpool2_replication_mode: off
+pgpool2_replication_stop_on_mismatch: off
+pgpool2_reset_query_list: ABORT; DISCARD ALL
+pgpool2_search_primary_node_timeout: 10
+pgpool2_serialize_accept: off
+pgpool2_socket_dir: /var/run/postgresql
+pgpool2_sr_check_database: 'postgres'
+pgpool2_sr_check_password: ''
+pgpool2_sr_check_period: 0
+pgpool2_sr_check_user: nobody
+pgpool2_ssl: off
+pgpool2_ssl_ca_cert: ''
+pgpool2_ssl_ca_cert_dir: ''
+pgpool2_ssl_cert: ./server.cert
+pgpool2_ssl_key: ./server.key
+pgpool2_syslog_facility: LOCAL0
+pgpool2_syslog_ident: pgpool
+pgpool2_trusted_servers: ''
+pgpool2_use_watchdog: off
+pgpool2_wd_authkey: ''
+pgpool2_wd_de_escalation_command: ''
+pgpool2_wd_escalation_command: ''
+pgpool2_wd_heartbeat_deadtime: 30
+pgpool2_wd_heartbeat_keepalive: 2
+pgpool2_wd_heartbeat_port: 9694
+pgpool2_wd_interval: 10
+pgpool2_wd_ipc_socket_dir: '/tmp'
+pgpool2_wd_life_point: 3
+pgpool2_wd_lifecheck_dbname: template1
+pgpool2_wd_lifecheck_method: heartbeat
+pgpool2_wd_lifecheck_password: ''
+pgpool2_wd_lifecheck_query: SELECT 1
+pgpool2_wd_lifecheck_user: nobody
+pgpool2_wd_monitoring_interfaces_list: ''
+pgpool2_wd_port: 9000
+pgpool2_wd_priority: 1
+pgpool2_white_function_list: ''
+pgpool2_white_memqcache_table_list: ''

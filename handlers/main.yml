@@ -1,0 +1,28 @@
+---
+
+- name: start pgpool2
+  service:
+    name: pgpool2
+    state: started
+
+- name: stop pgpool2
+  service:
+    name: pgpool2
+    state: stopped
+
+- name: restart pgpool2
+  service:
+    name: pgpool2
+    state: restarted
+
+- name: reload pgpool2
+  service:
+    name: pgpool2
+    state: reloaded
+
+- name: restart systemd
+  systemd:
+    name: pgpool2
+    state: started
+    daemon_reload: yes
+    enabled: yes

@@ -1,0 +1,41 @@
+- name: install required pgpool2 packages
+  apt:
+    pkg: "{{ item }}"
+    state: "{{ pgpool2_package_state }}"
+  with_items: "{{ pgpool2_packages }}"
+
+- name: short command wrapper
+  template:
+    src: pcpctl.j2
+    dest: /usr/local/bin/pcpctl
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Divert PCP authentication registry file {{ pgpool2_confdir }}/pcp.conf
+  command: dpkg-divert --quiet --local --divert {{ pgpool2_confdir }}/pcp.conf.dpkg-divert --rename {{ pgpool2_confdir }}/pcp.conf
+  args:
+    creates: "{{ pgpool2_confdir }}/pcp.conf.dpkg-divert"
+
+- name: Divert pgpool2 main configuration file {{ pgpool2_confdir }}/pgpool.conf
+  command: dpkg-divert --quiet --local --divert {{ pgpool2_confdir }}/pgpool.conf.dpkg-divert --rename {{ pgpool2_confdir }}/pgpool.conf
+  args:
+    creates: "{{ pgpool2_confdir }}/pgpool.conf.dpkg-divert"
+
+- name: Divert pgpool2 initscript /etc/init.d/pgpool2
+  command: dpkg-divert --quiet --local --divert /etc/init.d/pgpool2.dpkg-divert --rename /etc/init.d/pgpool2
+  args:
+    creates: "/etc/init.d/pgpool2.dpkg-divert"
+
+- name: Divert pgpool2 pool hba file {{ pgpool2_confdir }}/pool_hba.conf
+  command: dpkg-divert --quiet --local --divert {{ pgpool2_confdir }}/pool_hba.conf.dpkg-divert --rename {{ pgpool2_confdir }}/pool_hba.conf
+  args:
+    creates: "{{ pgpool2_confdir }}/pool_hba.conf.dpkg-divert"
+    
+- name: pgpool2 initscript /etc/init.d/pgpool2
+  template:
+    src: pgpool2.j2
+    dest: "/etc/init.d/pgpool2"
+    mode: 0755
+  notify:
+    - restart pgpool2

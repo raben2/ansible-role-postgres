@@ -1,0 +1,95 @@
+#!/bin/bash
+
+PATH='/bin:/sbin:/usr/bin:/usr/sbin'
+
+set -o pipefail
+
+PCP_TIMEOUT=1
+PCP_HOST=127.0.0.1
+PCP_PORT={{ pgpool2_pcp_port }}
+PCP_USER={{ pgpool2_pcp_user_name }}
+PCP_PASSWD={{ pgpool2_pcp_user_password }}
+PSQL_USER={{ pgpool2_sr_check_user }}
+PSQL_PASSWD={{ pgpool2_sr_check_password }}
+PSQL_PORT={{ pgpool2_port }}
+PSQL_DB=postgres
+
+log () {
+	echo "$@" 2>&1
+	logger -p local0.notice "$@"
+}
+
+die () {
+	log "$@"
+	exit 1
+}
+
+# PCP command wrapper due to terrible PCP CLI
+pcp_command () {
+	local command=$1
+	local __resultvar=$2
+	shift
+	shift
+	if [[ $__resultvar -eq NODE_COUNT ]]; then
+                eval $__resultvar=$(pcp_$command "$PCP_TIMEOUT" "$PCP_HOST" "$PCP_PORT" \
+					     "$PCP_USER" "$PCP_PASSWD" "$@")
+	else
+                eval $__resultvar='$(pcp_$command "$PCP_TIMEOUT" "$PCP_HOST" "$PCP_PORT" \
+	                                      "$PCP_USER" "$PCP_PASSWD" "$@")'
+	fi
+}
+
+# Fetch standby replication state by client_addr from master server
+get_repl_info () {
+	local client_addr=$1
+	PGPASSWORD="$PSQL_PASSWD" psql -qAt -U "$PSQL_USER" -h "$PCP_HOST" -p "$PSQL_PORT" -d "$PSQL_DB" \
+		-c "/* NO LOAD BALANCE */ SELECT state FROM pg_stat_replication WHERE client_addr='$client_addr'"
+}
+
+main () {
+        # Determine node count, actual node id's starts with 0
+        pcp_command node_count NODE_COUNT
+	echo "$NODE_COUNT" | grep -E -q '^[0-9]+$' \
+		|| die "Error parsing pcp_node_count output: $NODE_COUNT"
+
+	if [ "_$NODE_COUNT" = "_0" ]; then
+		# No backends
+		exit 0
+	fi
+
+	NODE_COUNT=$(($NODE_COUNT - 1))
+
+	for node_id in $(seq 0 $NODE_COUNT); do
+		# Fetching pgpool2 node information
+		NODE_INFO="NODE_INFO$node_id"
+		pcp_command node_info NODE_INFO "$node_id"
+		read node_address node_port node_status node_weight <<-IN
+		$NODE_INFO
+		IN
+
+		# Fetching node replica status
+		node_state=$(get_repl_info "$node_address")
+
+		# Reattaching only if detached and replica is fine
+		if [ \( "_$node_state" = "_streaming" \) -a \( "_$node_status" = "_3" \) ]; then
+			log "Node #$node_id ($node_address:$node_port) is $node_state and status=$node_status. Reattaching..."
+			pcp_command attach_node NODE_ATTACH "$node_id"
+
+			# pgpool2 reloading its workers
+			sleep 1
+
+			# Checking if node reattached
+			pcp_command node_info NODE_INFO "$node_id"
+			read node_address node_port node_status node_weight <<-IN
+			$NODE_INFO
+			IN
+
+			if [ "_$node_status" != "_3" ]; then
+				log "Node #$node_id reattached"
+			fi
+		fi
+	done
+}
+
+main
+

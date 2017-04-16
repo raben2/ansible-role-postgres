@@ -1,0 +1,14 @@
+[Unit]
+Description=pgpool-II
+Wants=postgresql.service
+
+[Service]
+User={{ pgpool2_user }}
+ExecStart=/bin/pgpool -n -f {{ pgpool2_confdir }}/pgpool.conf -F {{ pgpool2_confdir }}/pcp.conf -a {{ pgpool2_confdir }}/pool_hba.conf
+ExecReload=/bin/kill -HUP $MAINPID
+StandardOutput=journal
+StandartError=journal
+SyslogFacility=local0
+
+[Install]
+WantedBy=multi-user.target

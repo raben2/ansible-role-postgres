@@ -1,0 +1,76 @@
+---
+
+- name: PCP authentication registry file {{ pgpool2_confdir }}/pcp.conf
+  template:
+    src: pcp.conf.j2
+    dest: "{{ pgpool2_confdir }}/pcp.conf"
+    owner: "{{ pgpool2_user }}"
+    group: "{{ pgpool2_group }}"
+    mode: 0640
+
+- name: Create "/var/log/postgresql/" directory with necessary privileges
+  file:
+    dest: "/var/log/postgresql/"
+    owner: "{{ pgpool2_user }}"
+    group: "{{ pgpool2_group }}"
+    mode: 0755
+    state: directory
+
+- name: pgpool2 main configuration file {{ pgpool2_confdir }}/pgpool.conf
+  template:
+    src: pgpool.conf.j2
+    dest: "{{ pgpool2_confdir }}/pgpool.conf"
+    owner: "{{ pgpool2_user }}"
+    group: "{{ pgpool2_group }}"
+    mode: 0640
+  notify:
+    - restart pgpool2
+
+- name: pgpool2 pool hba file {{ pgpool2_confdir }}/pool_hba.conf
+  template:
+    src: pool_hba.conf.j2
+    dest: "{{ pgpool2_confdir }}/pool_hba.conf"
+    owner: "{{ pgpool2_user }}"
+    group: "{{ pgpool2_group }}"
+    mode: 0640
+  notify:
+    - restart pgpool2
+
+- name: pgpool2 node reattach script
+  template:
+    src: pgpool2_reattach.sh.j2
+    dest: "{{ pgpool2_confdir }}/pgpool2_reattach.sh"
+    mode: 0700
+
+- name: try to reattach nodes every 10 seconds
+  cron:
+    name: "pgpool2 reattach detached backends"
+    job: "for i in 0 1 2 3 4 5 ; do {{ pgpool2_confdir }}/pgpool2_reattach.sh >/dev/null 2>&1; sleep 10 ; done"
+    state: "{{'present' if pgpool2_auto_reattach else 'absent'}}"
+
+- name: add users to pool_passwd
+  copy:
+    dest: "{{ pgpool2_confdir }}/{{ pgpool2_pool_passwd }}"
+    owner: "{{ pgpool2_user }}"
+    group: "{{ pgpool2_group }}"
+    mode: 0640
+    content: |
+      {% for user in pgpool2_pool_users %}
+      {{ user.name }}:md5{{ (user.pass + user.name) | hash('md5') }}
+      {% endfor %}
+  notify:
+    - reload pgpool2
+
+- name: Create sudo permissions for pgpool2
+  copy:
+    src: pgpool2
+    dest: "/etc/sudoers.d/pgpool2"
+    owner: "root"
+    group: "root"
+    mode: 0440
+
+- name: ensure pgpool2 is running
+  service:
+    name: pgpool2
+    state: started
+

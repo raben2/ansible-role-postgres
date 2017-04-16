@@ -1,0 +1,5 @@
+pgpool2_packages:
+  - pgpool2
+  - rsync
+  - arping
+  - postgresql-client

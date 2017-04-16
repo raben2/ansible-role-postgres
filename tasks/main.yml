@@ -1,0 +1,8 @@
+---
+- include_vars: "{{ ansible_os_family }}.yml"
+
+- include: "install_{{ ansible_os_family }}.yml"
+  tags: [pgpool2, pgpool2-install]
+
+- include: configure_pgpool.yml
+  tags: [pgpool2, pgpool2-configure]

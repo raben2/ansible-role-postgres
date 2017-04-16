@@ -1,0 +1,2 @@
+Cmnd_Alias NETCFG_CMD = /sbin/ifconfig, /usr/sbin/arping
+postgres ALL=(ALL) NOPASSWD: NETCFG_CMD
