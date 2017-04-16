@@ -39,3 +39,4 @@
     mode: 0655
   notify:
     - restart systemd
+    - enable postgresql

@@ -1,6 +1,6 @@
-pgsql_repo_package: "https://download.postgresql.org/pub/repos/yum/{{ posgres_version }}/redhat/rhel-7-x86_64/pgdg-centos{{ postgres_version | regex_replace('.', '\\1') }}-{{ posgres_version }}-3.noarch.rpm"
+pgsql_repo_package: "https://download.postgresql.org/pub/repos/yum/{{ postgres_version }}/redhat/rhel-7-x86_64/pgdg-centos{{ pg_version }}-{{ postgres_version }}-3.noarch.rpm"
 
 pgpool2_packages:
-  - postgresql96-server 
-  - postgresql96-contrib
-  - pgpool-II-96
+  - "postgresql{{ pg_version }}-server"
+  - "postgresql{{ pg_version }}-contrib"
+  - "pgpool-II-{{ pg_version }}"

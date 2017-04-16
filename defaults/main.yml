@@ -1,5 +1,7 @@
 ---
-posgres_version: 9.6
+postgres_version: 9.6
+pg_version: 96 # required for download and linking
+postgres_initdb: True
   
 pgpool2_package_state: present
 pgpool2_user: postgres

@@ -1,0 +1,4 @@
+- name: initialize database
+  command: "/usr/pgsql-{{ postgres_version }}/bin/postgresql{{ pg_version }}-setup initdb"
+  notify:
+    - start postgresql
