@@ -2,12 +2,20 @@
 postgres_version: 9.6
 pg_version: 96 # required for download and linking
 postgres_initdb: True
+postgres_user: postgres
+postgres_group: postgres
+postgres_confdir: /etc/postgres
+postgres_datadir: /var/lib/pgsql
 postgres_replication_user: replicator
 postgres_replication_user_pass: passw0rd
-  
+postgres_installation: master # or slave
+
+
+
+# PGPOOL  
 pgpool2_package_state: present
-pgpool2_user: postgres
-pgpool2_group: postgres
+pgpool2_user: "{{ postgres_user }}"
+pgpool2_group: "{{ postgres_group }}"
 pgpool2_confdir: /etc/pgpool2
 pgpool2_pcp_user_name: pcpAdmin
 pgpool2_pcp_user_password: passw0rd

@@ -7,6 +7,6 @@
 - include: configure_pgpool.yml
   tags: [pgpool2, pgpool2-configure]
 
-- include: init_postgresql.yml
+- include: "postgresql_{{ postgres_installation }}.yml"
   tags: [postgres, postgresql]
   when: postgres_initdb

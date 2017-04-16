@@ -1,0 +1,25 @@
+- name: ensure postfix dirs
+  file:
+    state: directory
+    dest: "{{ item }}"
+    owner: "{{ postgres_user }}"
+    group: "{{ postgres_group }}"
+    mode: 0755
+  with_items:
+    - "{{ postgres_datadir }}"
+    - "{{ postgres_confdir }}"
+
+- name: initialize database
+  command: "/usr/pgsql-{{ postgres_version }}/bin/postgresql{{ pg_version }}-setup initdb -D {{ postgres_datadir }}"
+  args:
+    creates: "{{ postgres_datadir }}/{{ postgres_version }}/initdb.log"
+  notify:
+    - start postgresql 
+
+- name: create replication user
+  postgresql_user:
+    state: present
+    name: "{{ postgres_replication_user }}"
+    password: "{{ postgres_replication_user_pass }}"
+    role_attr_flags: LOGIN,REPLICATION
+    ssl_mode: disable
