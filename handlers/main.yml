@@ -27,13 +27,6 @@
     daemon_reload: yes
     enabled: yes
 
-- name: enable postgresql
-  systemd:
-    name: postgresql
-    state: stopped
-    daemon_reload: yes
-    enabled: yes
-
 - name: start postgresql
   systemd:
     name: postgresql
