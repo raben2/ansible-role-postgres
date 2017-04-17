@@ -26,11 +26,17 @@
     dest: /usr/lib/systemd/system/postgresql-{{ postgres_version }}.service
 
 - name: initialize database
-  command: "/usr/pgsql-{{ postgres_version }}/bin/postgresql{{ pg_version }}-setup initdb posgresql --pgdata={{ postgres_datadir }}"
+  command: "/usr/pgsql-{{ postgres_version }}/bin/initdb --pgdata={{ postgres_datadir }}/{{ postgres_version }}/data/"
   args:
-    creates: "{{ postgres_datadir }}/{{ postgres_version }}/initdb.log"
-  notify:
-    - start postgresql 
+    creates: "{{ postgres_datadir }}/{{ postgres_version }}/data/PG_VERSION"
+  become_user: "{{ postgres_user }}"
+  
+- name: enable postgresql
+  systemd:
+    name: postgresql
+    state: started
+    daemon_reload: yes
+    enabled: yes 
 
 - name: create replication user
   postgresql_user:
@@ -39,3 +45,4 @@
     password: "{{ postgres_replication_user_pass }}"
     role_attr_flags: LOGIN,REPLICATION
     ssl_mode: disable
+  become_user: "{{ postgres_user }}"
