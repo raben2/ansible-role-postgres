@@ -8,7 +8,7 @@ galaxy_info:
     - name: Ubuntu
       versions:
         - all
-    - name: Centos
+    - name: CentOS
       versions:
         - all
   categories:
