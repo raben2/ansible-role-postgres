@@ -31,5 +31,10 @@
   systemd:
     name: postgresql
     state: started
+
+- name: restart postgresql
+  systemd:
+    name: postgresql
+    state: started
     daemon_reload: yes
     enabled: yes

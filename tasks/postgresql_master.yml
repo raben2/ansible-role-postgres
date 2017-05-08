@@ -16,7 +16,7 @@
    owner: "{{ postgres_user }}"
    group: "{{ postgres_group }}"
    mode: 0700   
-   
+
 - name: ensure postgres dirs
   file:
     state: directory
@@ -29,11 +29,6 @@
     - "{{ postgres_confdir }}"
     - "{{ postgres_piddir }}"
 
-- name: add current user to postgress_group
-  user:
-    name: "{{ ansible_user_id }}"
-    group: "{{ postgres_group }}"
-    append: yes
 - name: create postgres.conf
   template:
     dest: "{{ postgres_confdir }}/postgresql.conf"
@@ -41,6 +36,9 @@
     owner: "{{ postgres_user }}"
     group: "{{ postgres_group }}"
     mode: 0755
+  notify: 
+    - start posgresql
+    - start pgpool2
 
 - name: copy pg_ident.conf
   copy:
@@ -49,6 +47,9 @@
     owner: "{{ postgres_user }}"
     group: "{{ postgres_group }}"
     mode: 0755
+  notify: 
+    - start posgresql
+    - start pgpool2
        
 - name: create pg_hba.conf
   template:
@@ -57,11 +58,16 @@
     owner: "{{ postgres_user }}"
     group: "{{ postgres_group }}"
     mode: 0755
+  notify: 
+    - start posgresql
+    - start pgpool2
 
 - name: create systemd service file
   template:
     src: "pgservice_{{ ansible_os_family }}.j2"
     dest: "{{ pgsql_systemd_path }}/postgresql.service"
+  notify: 
+    - restart posgresql
 
 - name: enable postgresql
   systemd:
@@ -81,7 +87,23 @@
   command: "su - {{ postgres_user }} -c '{{ pgsql_bin_path }}/initdb --pgdata={{ postgres_datadir }}/{{ postgres_version }}/data/'"
   args:
     creates: "{{ postgres_datadir }}/{{ postgres_version }}/data/PG_VERSION"
-  
+
+- name: cleanup
+  file:
+    state: absent
+    dest: "/etc/postgresql"
+- name: cleanup 2
+  file:
+    state: absent
+    dest: "{{ postgres_datadir }}/{{ postgres_version }}/data/{{ item }}"
+  with_items:
+    - postmater.opts
+    - postmaster.pid
+    - postgresql.auto.conf
+    - pg_hba.conf
+    - pg_ident.conf
+    - postgresq.conf 
+
 - name: enable postgresql
   systemd:
     name: postgresql
