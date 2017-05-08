@@ -1,6 +1,13 @@
+pgsql_repo_package: http://apt.postgresql.org/pub/repos/apt/
+pgsql_apt_key: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+pgsql_bin_path: "/usr/lib/postgresql/{{ postgres_version }}/bin"
+pgsql_systemd_path: /lib/systemd/system
 pgpool2_packages:
   - pgpool2
   - rsync
   - arping
-  - postgresql-client
-systemd_path: /lib/systemd/system
+  - "postgresql-common"
+  - "postgresql-{{ postgres_version }}"
+  - "postgresql-server-dev-{{ postgres_version }}"
+  - "postgresql-contrib-{{ postgres_version }}"
+  - "postgresql-plpython-{{ postgres_version }}"

@@ -1,17 +1,67 @@
-- name: ensure postfix dirs
+- name: ensure postgres group
+  group: 
+    state: present 
+    name: "{{ postgres_group }}"
+- name: ensure postgres user
+  user:
+    state: present
+    name: "{{ postgres_user }}"
+    home: "{{ postgres_datadir }}"
+    groups: "{{ postgres_group }}"
+
+- name: update path for postgres user
+  copy:
+   dest: "{{ postgres_datadir }}/.profile"
+   content: "PATH=$PATH:{{ pgsql_bin_path }}" 
+   owner: "{{ postgres_user }}"
+   group: "{{ postgres_group }}"
+   mode: 0700   
+   
+- name: ensure postgres dirs
   file:
     state: directory
     dest: "{{ item }}"
     owner: "{{ postgres_user }}"
     group: "{{ postgres_group }}"
-    mode: 0755
+    mode: 0700
   with_items:
     - "{{ postgres_datadir }}"
     - "{{ postgres_confdir }}"
-- name: enable systemd service
+    - "{{ postgres_piddir }}"
+
+- name: add current user to postgress_group
+  user:
+    name: "{{ ansible_user_id }}"
+    group: "{{ postgres_group }}"
+    append: yes
+- name: create postgres.conf
   template:
-    src: pgservice.j2
-    dest: "{{ systemd_path }}/postgresql.service"
+    dest: "{{ postgres_confdir }}/postgresql.conf"
+    src: postgres.conf.j2
+    owner: "{{ postgres_user }}"
+    group: "{{ postgres_group }}"
+    mode: 0755
+
+- name: copy pg_ident.conf
+  copy:
+    src: pg_ident.conf
+    dest: "{{ postgres_confdir }}/pg_ident.conf"
+    owner: "{{ postgres_user }}"
+    group: "{{ postgres_group }}"
+    mode: 0755
+       
+- name: create pg_hba.conf
+  template:
+    dest: "{{ postgres_confdir }}/pg_hba.conf"
+    src: pg_hba.conf.j2
+    owner: "{{ postgres_user }}"
+    group: "{{ postgres_group }}"
+    mode: 0755
+
+- name: create systemd service file
+  template:
+    src: "pgservice_{{ ansible_os_family }}.j2"
+    dest: "{{ pgsql_systemd_path }}/postgresql.service"
 
 - name: enable postgresql
   systemd:
@@ -19,17 +69,18 @@
     state: stopped
     daemon_reload: yes
     enabled: yes
-
 - name: remove rpm service file
   file:
     state: absent
-    dest: "{{ systemd_path }}/postgresql-{{ postgres_version }}.service"
+    dest: "{{ item }}"
+  with_items:
+    - "{{ pgsql_systemd_path }}/postgresql-{{ postgres_version }}.service"
+    - "{{ pgsql_systemd_path }}/postgres@.service"
 
 - name: initialize database
-  command: "/usr/pgsql-{{ postgres_version }}/bin/initdb --pgdata={{ postgres_datadir }}/{{ postgres_version }}/data/"
+  command: "su - {{ postgres_user }} -c '{{ pgsql_bin_path }}/initdb --pgdata={{ postgres_datadir }}/{{ postgres_version }}/data/'"
   args:
     creates: "{{ postgres_datadir }}/{{ postgres_version }}/data/PG_VERSION"
-  become_user: "{{ postgres_user }}"
   
 - name: enable postgresql
   systemd:

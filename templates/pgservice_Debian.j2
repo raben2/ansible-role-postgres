@@ -1,0 +1,20 @@
+[Unit]
+Description=PostgreSQL Cluster {{ postgres_version }}
+ConditionPathExists={{ postgres_confdir }}/postgresql.conf
+
+[Service]
+Type=notify
+StandardOutput=journal
+StandartError=journal
+User={{ postgres_user }}
+Group={{ postgres_group }}
+ExecStart={{ pgsql_bin_path }}/postgres -c config_file={{ postgres_confdir }}/postgresql.conf
+ExecStop=/usr/bin/pg_ctlcluster --skip-systemctl-redirect -m fast {{ postgres_version }} stop
+ExecReload=/usr/bin/pg_ctlcluster --skip-systemctl-redirect {{ postgres_version }} reload
+PIDFile={{ postgres_piddir }}/{{ postgres_version }}.pid
+SyslogIdentifier={{ postgres_cluster_name }}
+OOMScoreAdjust=-900
+
+
+[Install]
+WantedBy=multi-user.target

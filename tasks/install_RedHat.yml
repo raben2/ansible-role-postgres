@@ -35,7 +35,7 @@
 - name: pgpool2 systemd unit
   template:
     src: service.j2
-    dest: "/usr/lib/systemd/system/pgpool2.service"
+    dest: "{{ pgsql_systemd_path }}/pgpool2.service"
     mode: 0655
   notify:
     - restart systemd

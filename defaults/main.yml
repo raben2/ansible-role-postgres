@@ -6,11 +6,52 @@ postgres_user: postgres
 postgres_group: postgres
 postgres_confdir: /etc/postgres
 postgres_datadir: /var/lib/pgsql
+postgres_piddir: /var/run/postgresql
+postgres_cluster_name: "postgresql@{{ postgres_version }}"
+postgres_host_address: "localhost"
+postgres_port: 5433
+postgres_mode: standalone # master standalone hotstandby are the options
+postgres_locale: en_US.UTF-8
+postgres_lang: english
+postgres_timezone: localtime
+postgres_su_connections: 3 # max super user connections
+postgres_max_connections: 100
+postgres_advertise_bonjour: False
+postgres_ssl: False # not implemented yet
+postgres_auth_timeout: 1min
+postgres_pw_encryption: off
+postgres_user_namespace: off
+postgres_row_security: on
+postgres_tcp_idle: 0
+postgres_tcp_interval: 0
+postgres_tcp_count: 0 
+postgres_shared_buffers: 128MB
+postgres_huge_pages: try
+postgres_tmp_buffers: 64MB
+postgres_work_mem: 256MB
+postgres_maint_work_mem: 512MB
+postgres_tupl_repl_sort: 15000 # limits use of replacement selection sort
+postgres_max_prep_transactions: 10 # 0 diables the feature 
+postgres_gssapi: False # Kerberos Not implemented yet
 postgres_replication_user: replicator
 postgres_replication_user_pass: passw0rd
 postgres_installation: master # or slave
 
+postgres_hba_default:
+  - comment: unix socket connections
+    type: local
+    database: all
+    user: all
+    address: ""
+    method: trust
+  - comment: local IPv4 connections
+    type: host
+    database: all
+    user: all
+    address: 127.0.0.1/32
+    method: md5
 
+postgres_hba_custom: []
 
 # PGPOOL  
 pgpool2_package_state: present

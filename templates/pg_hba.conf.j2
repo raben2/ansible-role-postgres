@@ -79,15 +79,17 @@
 
 
 # TYPE  DATABASE        USER            ADDRESS                 METHOD
+{% for record in postgres_hba_default %}
+{% if record.comment is defined -%}
+# {{ record.comment }}
+{% endif %}
+{{ record.type | mandatory }}   {{ record.database | mandatory }}   {{ record.user | mandatory }}   {{ record.address }}    {{ record.method | mandatory }}
+{%- endfor %}
 
-# "local" is for Unix domain socket connections only
-local   all             all                                     trust
-# IPv4 local connections:
-host    all             all             127.0.0.1/32            trust
-# IPv6 local connections:
-host    all             all             ::1/128                 trust
-# Allow replication connections from localhost, by a user with the
-# replication privilege.
-#local   replication     postgres                                trust
-#host    replication     postgres        127.0.0.1/32            trust
-#host    replication     postgres        ::1/128                 trust
+
+{% for record in postgres_hba_custom %}
+{% if record.comment is defined -%}
+# {{ record.comment }}
+{% endif %}
+{{ record.type | mandatory }}   {{ record.database | mandatory }}   {{ record.user | mandatory }}   {{ record.address }}    {{ record.method | mandatory }}
+{%- endfor %}

@@ -5,6 +5,7 @@
 .ansible*
 .DS_Store
 .DS_Store?
+*.todo
 ._*
 .Spotlight-V100
 .Trashes

@@ -1,0 +1,29 @@
+[Unit]
+Description=PostgreSQL {{ postgres_version }} database server
+After=syslog.target
+After=network.target
+
+[Service]
+Type=notify
+
+User={{ postgres_user }}
+Group={{ postgres_group }}
+
+# Where to send early-startup messages from the server (before the logging
+# options of postgresql.conf take effect)
+# This is normally controlled by the global default set by systemd
+StandardOutput=journal
+StandardError=journal
+ExecStartPre={{ pgsql_bin_path }}/postgresql{{ pg_version }}-check-db-dir ${PGDATA}
+ExecStart={{ pgsql_bin_path }}/postmaster -c {{ postgres_confdir }}/postgresql.conf
+ExecReload=/bin/kill -HUP $MAINPID
+PIDFile={{ postgres_piddir }}/{{ postgres_version }}.pid
+KillMode=mixed
+KillSignal=SIGINT
+OOMScoreAdjust=-900 
+
+# Give a reasonable amount of time for the server to start up/shut down
+TimeoutSec=300
+
+[Install]
+WantedBy=multi-user.target
