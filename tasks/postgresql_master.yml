@@ -119,3 +119,4 @@
     role_attr_flags: LOGIN,REPLICATION
     ssl_mode: disable
   become_user: "{{ postgres_user }}"
+  when: (postgres_mode != 'standalone')
