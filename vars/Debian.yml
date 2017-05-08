@@ -3,3 +3,4 @@ pgpool2_packages:
   - rsync
   - arping
   - postgresql-client
+systemd_path: /lib/systemd/system

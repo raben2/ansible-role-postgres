@@ -5,3 +5,4 @@ pgpool2_packages:
   - "postgresql{{ pg_version }}-contrib"
   - "pgpool-II-{{ pg_version }}"
   - "python-psycopg2"
+systemd_path: /usr/lib/systemd/system

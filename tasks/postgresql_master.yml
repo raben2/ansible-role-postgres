@@ -11,7 +11,7 @@
 - name: enable systemd service
   template:
     src: pgservice.j2
-    dest: /usr/lib/systemd/system/postgresql.service
+    dest: "{{ systemd_path }}/postgresql.service"
 
 - name: enable postgresql
   systemd:
@@ -23,7 +23,7 @@
 - name: remove rpm service file
   file:
     state: absent
-    dest: /usr/lib/systemd/system/postgresql-{{ postgres_version }}.service
+    dest: "{{ systemd_path }}/postgresql-{{ postgres_version }}.service"
 
 - name: initialize database
   command: "/usr/pgsql-{{ postgres_version }}/bin/initdb --pgdata={{ postgres_datadir }}/{{ postgres_version }}/data/"
