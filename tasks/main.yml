@@ -4,6 +4,8 @@
 - include: "install_{{ ansible_os_family }}.yml"
   tags: [pgpool2, pgpool2-install]
 
+- include: postgres_user.yml
+
 - include: "postgresql_{{ postgres_installation }}.yml"
   tags: [postgres, postgresql]
   when: postgres_initdb

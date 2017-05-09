@@ -1,0 +1,36 @@
+- name: ensure postgres group
+  group: 
+    state: present 
+    name: "{{ postgres_group }}"
+- name: ensure postgres user
+  user:
+    state: present
+    name: "{{ postgres_user }}"
+    home: "{{ postgres_datadir }}"
+    groups: "{{ postgres_group }}"
+
+- name: update path for postgres user
+  copy:
+   dest: "{{ postgres_datadir }}/.profile"
+   content: "PATH=$PATH:{{ pgsql_bin_path }}" 
+   owner: "{{ postgres_user }}"
+   group: "{{ postgres_group }}"
+   mode: 0700   
+
+- name: add postgres user ssh keys
+  authorized_key:
+    user: "{{ postgres_user }}"
+    state: present
+    key: "{{ item }}"
+  with_items: 
+   - "{{ postgres_ssh_pubkeys }}"
+  when: postgres_su_from_ansible_ssh_user
+
+- name: allow current user to su - postgres
+  copy:
+    dest: /etc/sudoers.d/postgres
+    content: "{{ postgres_su_from_user }} ALL=({{ postgres_su_from_user }}:{{ postgres_user }}) NOPASSWD:ALL"
+    owner: root
+    group: root
+    mode: 0440
+  when: postgres_su_from_ansible_ssh_user

@@ -6,6 +6,7 @@ pgpool2_packages:
   - pgpool2
   - rsync
   - arping
+  - python-psycopg2
   - "postgresql-common"
   - "postgresql-{{ postgres_version }}"
   - "postgresql-server-dev-{{ postgres_version }}"

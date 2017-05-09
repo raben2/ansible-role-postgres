@@ -1,22 +1,3 @@
-- name: ensure postgres group
-  group: 
-    state: present 
-    name: "{{ postgres_group }}"
-- name: ensure postgres user
-  user:
-    state: present
-    name: "{{ postgres_user }}"
-    home: "{{ postgres_datadir }}"
-    groups: "{{ postgres_group }}"
-
-- name: update path for postgres user
-  copy:
-   dest: "{{ postgres_datadir }}/.profile"
-   content: "PATH=$PATH:{{ pgsql_bin_path }}" 
-   owner: "{{ postgres_user }}"
-   group: "{{ postgres_group }}"
-   mode: 0700   
-
 - name: ensure postgres dirs
   file:
     state: directory

@@ -2,6 +2,8 @@
 postgres_version: 9.6
 pg_version: 96 # required for download and linking
 postgres_initdb: True
+postgres_su_from_ansible_ssh_user: false # Allow ssh user to connect as postgres without pw
+postgres_su_from_user: root
 postgres_user: postgres
 postgres_group: postgres
 postgres_confdir: /etc/postgres
@@ -9,7 +11,7 @@ postgres_datadir: /var/lib/pgsql
 postgres_piddir: /var/run/postgresql
 postgres_cluster_name: "postgresql@{{ postgres_version }}"
 postgres_host_address: "localhost"
-postgres_port: 5433
+postgres_port: 5432
 postgres_mode: standalone # master standalone hotstandby are the options
 postgres_locale: en_US.UTF-8
 postgres_lang: english
@@ -36,6 +38,7 @@ postgres_gssapi: False # Kerberos Not implemented yet
 postgres_replication_user: replicator
 postgres_replication_user_pass: passw0rd
 postgres_installation: master # or slave
+postgres_ssh_pubkeys: []
 
 postgres_hba_default:
   - comment: unix socket connections

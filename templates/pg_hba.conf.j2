@@ -79,6 +79,8 @@
 
 
 # TYPE  DATABASE        USER            ADDRESS                 METHOD
+host   all   {{ postgres_user }}   {{ postgres_host_address }}/32 trust
+
 {% for record in postgres_hba_default %}
 {% if record.comment is defined -%}
 # {{ record.comment }}
