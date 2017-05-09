@@ -29,7 +29,10 @@
 - name: allow current user to su - postgres
   copy:
     dest: /etc/sudoers.d/postgres
-    content: "{{ postgres_su_from_user }} ALL=({{ postgres_su_from_user }}:{{ postgres_user }}) NOPASSWD:ALL"
+    content: |
+      {{ postgres_su_from_user }} ALL=({{ postgres_su_from_user }}:{{ postgres_user }}) NOPASSWD:ALL
+      {{ postgres_user }} ALL=(ALL:ALL) NOPASSWD:/bin/systemctl start postgresql.service
+      {{ postgres_user }} ALL=(ALL:ALL) NOPASSWD:/bin/systemctl stop postgresql.service
     owner: root
     group: root
     mode: 0440
