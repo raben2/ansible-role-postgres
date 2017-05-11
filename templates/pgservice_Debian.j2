@@ -5,7 +5,7 @@ ConditionPathExists={{ postgres_confdir }}/postgresql.conf
 [Service]
 Type=notify
 StandardOutput=journal
-StandartError=journal
+StandardError=journal
 User={{ postgres_user }}
 Group={{ postgres_group }}
 ExecStart={{ pgsql_bin_path }}/postgres -c config_file={{ postgres_confdir }}/postgresql.conf
