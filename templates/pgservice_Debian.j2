@@ -1,6 +1,8 @@
 [Unit]
 Description=PostgreSQL Cluster {{ postgres_version }}
 ConditionPathExists={{ postgres_confdir }}/postgresql.conf
+After=syslog.target
+After=network.target
 
 [Service]
 Type=notify
