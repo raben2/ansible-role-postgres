@@ -18,7 +18,7 @@
     group: "{{ postgres_group }}"
     mode: 0755
   notify: 
-    - start posgresql
+    - start postgresql
     - start pgpool2
 
 - name: copy pg_ident.conf
@@ -29,7 +29,7 @@
     group: "{{ postgres_group }}"
     mode: 0755
   notify: 
-    - start posgresql
+    - start postgresql
     - start pgpool2
        
 - name: create pg_hba.conf
@@ -40,7 +40,7 @@
     group: "{{ postgres_group }}"
     mode: 0755
   notify: 
-    - start posgresql
+    - start postgresql
     - start pgpool2
 
 - name: create systemd service file
@@ -48,7 +48,7 @@
     src: "pgservice_{{ ansible_os_family }}.j2"
     dest: "{{ pgsql_systemd_path }}/postgresql.service"
   notify: 
-    - restart posgresql
+    - restart postgresql
 
 - name: enable postgresql
   systemd:
